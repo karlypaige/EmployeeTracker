@@ -47,13 +47,13 @@ INSERT INTO role (title, salary, department_id)
         ('Senior HR', 90000,4),
         ('HR Generalist', 60000,4);
 INSERT INTO employee (first_name, last_name, role_id, manager_id) 
-    VALUES ('Judy', 'Bloom', 1, NULL),
+    VALUES ('Judy', 'Bloom', 1, 0),
         ('Kurt', 'Vonnegut', 2, 1),
-        ('Karly', 'Maruyama', 3, NULL),
+        ('Karly', 'Maruyama', 3, 0),
         ('John', 'Smith', 4, 3),
         ('Brian', 'Green', 5, 4),
-        ('Nadia', 'Comaneci', 6, NULL),
-        ('Bart Conner', '', 7, NULL),
+        ('Nadia', 'Comaneci', 6, 0),
+        ('Bart Conner', '', 7, 0),
         ('Shannon', 'Miller', 8, 7),
         ('Simone', 'Biles', 5, 4),
         ('Shawn', 'Johnson', 2, 1),
