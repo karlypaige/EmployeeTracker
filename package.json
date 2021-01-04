@@ -1,0 +1,27 @@
+{
+  "name": "EmployeeTracker",
+  "version": "1.0.0",
+  "description": "Browser interface utilizing node MySQL, Inquirer, and console.table to interact with an emplyee database table.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlypaige/EmployeeTracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karlypaige/EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/karlypaige/EmployeeTracker#readme",
+  "dependencies": {
+    "console": "^0.7.2",
+    "console.table": "^0.10.0",
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
