@@ -137,27 +137,78 @@ function addEmployee () {
 }
 
 function viewDepartment() {
+    //display all the departments
       var query = "SELECT id, name FROM department";
       connection.query(query, function(err, res) {
         for (var i = 0; i < res.length; i++) {
           console.log("ID: " + res[i].id + " || Name: " + res[i].name);
         }
-        runSearch();
+        //allow user to run another search if they want
+        inquirer.prompt({
+            name: "rerun",
+            type: "confirm",
+            message: "Would you like another search?",
+        })
+        .then(function(answer) {
+            if(answer.rerun === true) {
+                runSearch(); 
+            } else {
+                connection.end();
+                return;
+            }
+           
+        })
       });
 }
 
 function viewRole() {
+    //display all the roles
     var query = "SELECT id, title, salary, department_id FROM role";
       connection.query(query, function(err, res) {
         for (var i = 0; i < res.length; i++) {
           console.log("ID: " + res[i].id + " || Title: " + res[i].title + " || Salary: " + res[i].salary + " || Department: " + res[i].department_id);
         }
-        runSearch();
+        //allow user to run another search if they want
+        inquirer.prompt({
+            name: "rerun",
+            type: "confirm",
+            message: "Would you like another search?",
+        })
+        .then(function(answer) {
+            if(answer.rerun === true) {
+                runSearch(); 
+            } else {
+                connection.end();
+                return;
+            }
+           
+        })
       });
 }
 
 function viewEmployee () {
-    console.log("you are in viewEmployee function");
+    //dispaly all the employees
+    var query = "SELECT id, first_name, last_name, role_id, manager_id FROM employee";
+      connection.query(query, function(err, res) {
+        for (var i = 0; i < res.length; i++) {
+          console.log("ID: " + res[i].id + " || First name: " + res[i].first_name + " || Last name: " + res[i].last_name + " || Role: " + res[i].role_id + " || Manager: " + res[i].manager_id);
+        }
+        //allow user to run another search if they want
+        inquirer.prompt({
+            name: "rerun",
+            type: "confirm",
+            message: "Would you like another search?",
+        })
+        .then(function(answer) {
+            if(answer.rerun === true) {
+                runSearch(); 
+            } else {
+                connection.end();
+                return;
+            }
+           
+        })
+      });
 }
 
 function updateDepartment() {
