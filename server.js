@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
-var console = require('console');
+var cTable = require('console.table');
 var password = require('../Assets/password.js')
 
 var connection = mysql.createConnection({
@@ -269,9 +269,13 @@ function viewDepartment() {
     //display all the departments
     var query = "SELECT id, name FROM department";
     connection.query(query, function (err, res) {
+        var tableObj = [];
         for (var i = 0; i < res.length; i++) {
-            console.log("ID: " + res[i].id + " || Name: " + res[i].name);
-        }
+            tableObj.push({ID: res[i].id, Name: res[i].name});
+        };
+        
+        console.log(cTable.getTable(tableObj));
+
         //allow user to run another search if they want
         inquirer.prompt({
             name: "rerun",
@@ -294,9 +298,13 @@ function viewRole() {
     //display all the roles
     var query = "SELECT id, title, salary, department_id FROM role";
     connection.query(query, function (err, res) {
+        var tableObj = [];
         for (var i = 0; i < res.length; i++) {
-            console.log("ID: " + res[i].id + " || Title: " + res[i].title + " || Salary: " + res[i].salary + " || Department: " + res[i].department_id);
+            tableObj.push({ID: res[i].id, Title: res[i].title, Salary: res[i].salary, Department: res[i].department_id});
         }
+
+        console.log(cTable.getTable(tableObj));
+
         //allow user to run another search if they want
         inquirer.prompt({
             name: "rerun",
@@ -318,10 +326,14 @@ function viewRole() {
 function viewEmployee() {
     //dispaly all the employees
     var query = "SELECT id, first_name, last_name, role_id, manager_id FROM employee";
+    tableObj =[];
     connection.query(query, function (err, res) {
         for (var i = 0; i < res.length; i++) {
-            console.log("ID: " + res[i].id + " || First name: " + res[i].first_name + " || Last name: " + res[i].last_name + " || Role: " + res[i].role_id + " || Manager: " + res[i].manager_id);
+            tableObj.push({ID: res[i].id, First_name: res[i].first_name, Last_name: res[i].last_name, Role: res[i].role_id, Manager: res[i].manager_id});
         }
+
+        console.log(cTable.getTable(tableObj));
+
         //allow user to run another search if they want
         inquirer.prompt({
             name: "rerun",
@@ -341,61 +353,232 @@ function viewEmployee() {
 }
 
 function updateDepartment() {
-    console.log("you are in updateDepartment function");
-    //allow user to run another search if they want
-    inquirer.prompt({
-        name: "rerun",
-        type: "confirm",
-        message: "Would you like another search?",
-    })
-        .then(function (answer) {
-            if (answer.rerun === true) {
-                runSearch();
-            } else {
-                connection.end();
-                return;
+    inquirer
+        .prompt([
+            {
+                name: "departmentUpdate",
+                type: "input",
+                message: "Please enter department you wish to update.",
+            },
+            {
+                name: "departmentNew",
+                type: "input",
+                message: "Please enter the updated department name.",
             }
+        ])
+        .then(function (answer) {
+            var query = "UPDATE department SET ? WHERE ?";
+            console.log(answer.departmentAdd);
+            connection.query(query, [
+                {
+                    name: answer.departmentNew
+                },
+                {
+                    name: answer.departmentUpdate
+                }
+            ], function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " department updated!")
 
+                //allow user to run another search if they want
+                inquirer.prompt({
+                    name: "rerun",
+                    type: "confirm",
+                    message: "Would you like another search?",
+                })
+                    .then(function (answer) {
+                        if (answer.rerun === true) {
+                            runSearch();
+                        } else {
+                            connection.end();
+                            return;
+                        }
+
+                    })
+            });
         })
-
 }
 
 function updateRole() {
-    console.log("you are in updateRole function");
-    //allow user to run another search if they want
-    inquirer.prompt({
-        name: "rerun",
-        type: "confirm",
-        message: "Would you like another search?",
-    })
+    inquirer
+        .prompt([
+            {
+                name: "roleUpdate",
+                type: "input",
+                message: "Please enter the role you wish to update.",
+            },
+            {
+                name: "roleField",
+                type: "rawlist",
+                message: "Which field needs updating?",
+                choices: ["title", "salary", "department_id"]
+            },
+            {
+                name: "roleNew",
+                type: "input",
+                message: "Please enter the new value.",
+            }
+        ])
         .then(function (answer) {
-            if (answer.rerun === true) {
-                runSearch();
-            } else {
-                connection.end();
-                return;
+            console.log(answer.roleField)
+            var query = "UPDATE role SET ? WHERE ?";
+            switch (answer.roleField) {
+                case "title":
+                    connection.query(query, [
+                        {
+                            title: answer.roleNew
+                        },
+                        {
+                            title: answer.roleUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " role updated!")
+                    });
+                    break;
+
+                case "salary":
+                    connection.query(query, [
+                        {
+                            salary: answer.roleNew
+                        },
+                        {
+                            title: answer.roleUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " role updated!")
+                    });
+                    break;
+
+                case "department_id":
+                    connection.query(query, [
+                        {
+                            department_id: answer.roleNew
+                        },
+                        {
+                            title: answer.roleUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " role updated!")
+                    });
+                    break;
             }
 
-        })
+            //allow user to run another search if they want
+            inquirer.prompt({
+                name: "rerun",
+                type: "confirm",
+                message: "Would you like another search?",
+            })
+                .then(function (answer) {
+                    if (answer.rerun === true) {
+                        runSearch();
+                    } else {
+                        connection.end();
+                        return;
+                    }
 
+                })
+        });
 }
 
 function updateEmployee() {
-    console.log("you are in updateEmployee function");
-    //allow user to run another search if they want
-    inquirer.prompt({
-        name: "rerun",
-        type: "confirm",
-        message: "Would you like another search?",
-    })
+    inquirer
+        .prompt([
+            {
+                name: "employeeUpdate",
+                type: "input",
+                message: "Please enter the employee_id you wish to update.",
+            },
+            {
+                name: "employeeField",
+                type: "rawlist",
+                message: "Which field needs updating?",
+                choices: ["first_name", "last_name", "role_id", "manager_id"]
+            },
+            {
+                name: "employeeNew",
+                type: "input",
+                message: "Please enter the new value.",
+            }
+        ])
         .then(function (answer) {
-            if (answer.rerun === true) {
-                runSearch();
-            } else {
-                connection.end();
-                return;
+            console.log(answer.employeeField)
+            var query = "UPDATE employee SET ? WHERE ?";
+            switch (answer.employeeField) {
+                case "first_name":
+                    connection.query(query, [
+                        {
+                            first_name: answer.employeeNew
+                        },
+                        {
+                            id: answer.employeeUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " employee updated!")
+                    });
+                    break;
+
+                case "last_name":
+                    connection.query(query, [
+                        {
+                            last_name: answer.employeeNew
+                        },
+                        {
+                            id: answer.employeeUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " employee updated!")
+                    });
+                    break;
+
+                case "role_id":
+                    connection.query(query, [
+                        {
+                            role_id: answer.employeeNew
+                        },
+                        {
+                            id: answer.employeeUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " employee updated!")
+                    });
+                    break;
+
+                case "manager_id":
+                    connection.query(query, [
+                        {
+                            manager_id: answer.employeeNew
+                        },
+                        {
+                            id: answer.employeeUpdate
+                        }
+                    ], function (err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " employee updated!")
+                    });
+                    break;
             }
 
-        })
+            //allow user to run another search if they want
+            inquirer.prompt({
+                name: "rerun",
+                type: "confirm",
+                message: "Would you like another search?",
+            })
+                .then(function (answer) {
+                    if (answer.rerun === true) {
+                        runSearch();
+                    } else {
+                        connection.end();
+                        return;
+                    }
 
+                })
+        });
 }
